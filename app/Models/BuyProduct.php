@@ -1,0 +1,26 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class BuyProduct extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'product_id',
+        'user_id',
+        'product_code',
+        'title',
+        'description',
+        'price',
+        'photo',
+    ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+}
