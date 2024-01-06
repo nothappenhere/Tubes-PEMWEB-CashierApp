@@ -56,6 +56,12 @@
                         <p>User Profile</p>
                     </a>
                 </li>
+                <li>
+                    <a href="{{ route('admin.product.product-cart') }}">
+                        <i class="tim-icons icon-basket-simple"></i>
+                        <p>Shopping Cart</p>
+                    </a>
+                </li>
             @endcan
             <li>
                 <a href="{{ route('logout') }}">

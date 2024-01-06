@@ -1,7 +1,7 @@
 <div class="col-md-12">
     <div class="card">
         <div class="card-header">
-            <h2 class="card-title">Buying Product List</h2>
+            <h2 class="card-title">Users Buying List</h2>
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -9,27 +9,29 @@
                     <thead class=" text-primary">
                         <tr>
                             <th class="text-center text-info">#</th>
+                            <th class="text-center text-info">Email</th>
                             <th class="text-center text-info">Username</th>
-                            <th class="text-center text-info">Product Name</th>
-                            <th class="text-center text-info">Price</th>
+                            <th class="text-center text-info">Total Price</th>
                             {{-- <th class="text-center text-info">Picture</th> --}}
                             <th class="text-center text-info">Buying Date</th>
+                            <th class="text-center text-info">Status</th>
                             <th class="text-center text-info"></th>
                         </tr>
                     </thead>
                     <tbody>
-                        @if ($buyproduct->count() > 0)
-                            @foreach ($buyproduct as $item)
+                        @if ($payproduct->count() > 0)
+                            @foreach ($payproduct as $item)
                                 <tr>
                                     <td class="text-center">{{ $loop->iteration }}</td>
-                                    <td class="text-center">{{ $item->user->username }}</td>
-                                    <td class="text-center">{{ $item->title }}</td>
-                                    <td class="text-center">Rp {{ $item->price }}</td>
+                                    <td class="text-center">{{ $item->email }}</td>
+                                    <td class="text-center">{{ $item->username }}</td>
+                                    <td class="text-center">Rp {{ $item->total_price }}</td>
                                     {{-- <td class="text-center">
                                         <img src="{{ asset('storage/photo-product/' . $item->photo) }}"
                                         alt="Image-Product" width="150">
                                     </td> --}}
                                     <td class="text-center">{{ $item->created_at }}</td>
+                                    <td class="text-center">-</td>
                                     <td class="text-right">
                                         <div class="dropdown">
                                             <a class="btn btn-sm btn-icon-only text-light" href="#" role="button"

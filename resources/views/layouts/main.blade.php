@@ -105,11 +105,11 @@
                                                                 <form
                                                                     action="{{ route('admin.product.buy', ['id' => $item->id]) }}"
                                                                     method="POST" type="button"
-                                                                    onsubmit="return confirm('Are you sure you want to buy this product with ID {{ $item->id }}?')">
+                                                                    onsubmit="return confirm('Are you sure you want to add this product with ID {{ $item->id }} to cart?')">
                                                                     @csrf
                                                                     @method('PUT')
-                                                                    <button type="submit" class="btn btn-primary">Buy a
-                                                                        Product</button>
+                                                                    <button type="submit" class="btn btn-primary">Add
+                                                                        to Cart</button>
                                                                 </form>
                                                             </td>
                                                         </tr>
@@ -121,6 +121,50 @@
                                                     </tr>
                                                 @endif
                                             </tbody>
+                                            {{-- <tfoot>
+                                                <tr>
+                                                    <th class="text-left pt-lg-4" colspan="2">Total: Rp
+                                                        {{ $totalPrice }}</th>
+                                                    <form action="{{ route('admin.product.buy', ['id' => $item->id]) }}" method="POST">
+                                                        @csrf
+                                                        @method('PUT')
+                                                        <input type="hidden" name="totalPrice"
+                                                            value="{{ $totalPrice }}">
+
+                                                        <th></th>
+                                                        <th></th>
+
+                                                        <th colspan="2">
+                                                            <!-- Tambahkan input untuk NO HP -->
+                                                            <div class="form-group">
+                                                                <label for="phone">Phone:</label>
+                                                                <input type="text" name="phone" class="form-control"
+                                                                    placeholder="Phone Number" value="{{ old('phone') }}">
+                                                                @error('phone')
+                                                                    <small>{{ $message }}</small>
+                                                                @enderror
+                                                            </div>
+                                                        </th>
+
+                                                        <th colspan="2">
+                                                            <!-- Tambahkan input untuk alamat -->
+                                                            <div class="form-group">
+                                                                <label for="address" class="text-left">Address:</label>
+                                                                <input type="text" name="address" class="form-control"
+                                                                    placeholder="Address" value="{{ old('address') }}">
+                                                                @error('address')
+                                                                    <small>{{ $message }}</small>
+                                                                @enderror
+                                                            </div>
+                                                        </th>
+
+                                                        <th class="text-center">
+                                                            <button type="submit" class="btn btn-primary"
+                                                                id="pay-button" disabled="">Pay</button>
+                                                        </th>
+                                                    </form>
+                                                </tr>
+                                            </tfoot> --}}
                                         </table>
                                     </div>
                                 </div>

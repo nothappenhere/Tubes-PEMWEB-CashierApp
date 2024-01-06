@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\BuyProduct;
+use App\Models\PayProduct;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -23,7 +24,8 @@ class HomeController extends Controller
         $data = User::get();
         $product = Product::get();
         $buyproduct = BuyProduct::get();
-        return view('dashboard', compact('data', 'product', 'buyproduct'));
+        $payproduct = PayProduct::get();
+        return view('dashboard', compact('data', 'product', 'buyproduct', 'payproduct'));
 
         // if(auth()->user()->can('view_dashboard')){
         //     $data = User::get();
@@ -101,6 +103,98 @@ class HomeController extends Controller
         return redirect()->route('admin.profile.user-manage')->with('success_delete', 'Account deleted successfully.');
     }
 
+    public function cart_buy(Request $request)
+    {
+        $buyproduct = BuyProduct::get();
+        $totalPrice = $buyproduct->sum('price'); // Calculate total price
+
+        // Set your Merchant Server Key
+        \Midtrans\Config::$serverKey = config('midtrans.server_key');
+        // Set to Development/Sandbox Environment (default). Set to true for Production Environment (accept real transaction).
+        \Midtrans\Config::$isProduction = false;
+        // Set sanitization on (default)
+        \Midtrans\Config::$isSanitized = true;
+        // Set 3DS transaction for credit card to true
+        \Midtrans\Config::$is3ds = true;
+
+        $params = array(
+            'transaction_details' => array(
+                'order_id' => rand(),
+                'gross_amount' => $totalPrice,
+            ),
+            'customer_details' => array(
+                'name' => auth()->user()->username, // Ganti menjadi $request->username
+                'email' => auth()->user()->email, // Ganti menjadi $request->email
+                'phone' => $request->input('phone'), // Ganti menjadi $request->phone
+            ),
+        );
+
+        $snapToken = \Midtrans\Snap::getSnapToken($params);
+
+        return view('tables.cartlist', compact('buyproduct', 'totalPrice', 'snapToken'));
+    }
+    public function pay(Request $request)
+    {
+        $user = Auth::user();
+        $buyproduct = BuyProduct::get();
+        $totalPrice = $buyproduct->sum('price'); // Calculate total price
+
+        // Ambil total harga dari variabel yang sudah dihitung sebelumnya
+        $totalPrice = $request->input('totalPrice');
+
+        // Validasi input
+        $request->validate([
+            'address' => 'required|string',
+            'phone' => 'required|numeric', // Sesuaikan dengan opsi yang ada pada formulir
+        ]);
+
+        $serverKey = config('midtrans.server_key');
+        $hashed = hash('sha512', $request->order_id . $request->status_code . $request->gross_amount . $serverKey);
+        if ($hashed == $request->signature_key) {
+            if ($request->transaction_status == 'capture') {
+                // Buat catatan pembayaran di tabel pay_products
+                PayProduct::create([
+                    'user_id' => $user->id,
+                    'email' => $user->email,
+                    'username' => $user->username,
+                    'total_price' => $totalPrice,
+                    'address' => $request->input('address'),
+                    'phone' => $request->input('phone'),
+                    'status' => 'Paid',
+                    // Tambahkan atribut lain sesuai kebutuhan
+                ]);
+            }
+        }
+
+        // // Set your Merchant Server Key
+        // \Midtrans\Config::$serverKey = config('midtrans.server_key');
+        // // Set to Development/Sandbox Environment (default). Set to true for Production Environment (accept real transaction).
+        // \Midtrans\Config::$isProduction = false;
+        // // Set sanitization on (default)
+        // \Midtrans\Config::$isSanitized = true;
+        // // Set 3DS transaction for credit card to true
+        // \Midtrans\Config::$is3ds = true;
+
+        // $params = array(
+        //     'transaction_details' => array(
+        //         'order_id' => $pay->id,
+        //         'gross_amount' => $pay->total_price,
+        //     ),
+        //     'customer_details' => array(
+        //         'name' => $request->username, // Ganti menjadi $request->username
+        //         'email' => $request->email, // Ganti menjadi $request->email
+        //         'phone' => $request->phone, // Ganti menjadi $request->phone
+        //     ),
+        // );
+
+        // $snapToken = \Midtrans\Snap::getSnapToken($params);
+
+        // Lakukan tindakan tambahan terkait pembayaran jika diperlukan
+
+        // Redirect atau kembalikan respons sesuai kebutuhan
+        return redirect()->route('admin.product.product-cart')->with('success_payment', 'Payment Successful, Thank you.');
+    }
+
     public function buy(Request $request, $id)
     {
         // Temukan produk berdasarkan ID
@@ -121,12 +215,13 @@ class HomeController extends Controller
         ]);
 
         // Redirect atau kembalikan respons yang sesuai
-        return redirect()->route('admin.dashboard')->with('success_buy', 'Product buying successfully.');
+        return redirect()->route('admin.dashboard')->with('success_buy', 'Product Added to cart.');
     }
     public function detail_buy(Request $request, $id)
     {
         $buyproduct = BuyProduct::find($id);
-        return view('tables.detailbuyinglist', compact('buyproduct'));
+        $payproduct = PayProduct::find($id);
+        return view('tables.detailbuyinglist', compact('buyproduct', 'payproduct'));
     }
     public function delete_buy(Request $request, $id)
     {

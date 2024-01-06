@@ -44,6 +44,8 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth'], 'as' => 'admin.'], 
     Route::delete('/profile/user-delete/{id}', [HomeController::class, 'user_delete'])->name('profile.user-delete');
 
     Route::put('/buy/{id}', [HomeController::class, 'buy'])->name('product.buy');
+    Route::get('/show/cartproduct', [HomeController::class, 'cart_buy'])->name('product.product-cart');
+    Route::post('/pay', [HomeController::class, 'pay'])->name('product.pay');
     Route::get('/show/detailproduct/{id}', [HomeController::class, 'detail_buy'])->name('product.product-detail');
     Route::delete('/show/deleteproduct/{id}', [HomeController::class, 'delete_buy'])->name('product.product-delete');
 
