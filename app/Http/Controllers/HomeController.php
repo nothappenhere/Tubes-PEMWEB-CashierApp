@@ -105,13 +105,14 @@ class HomeController extends Controller
 
     public function cart_buy(Request $request)
     {
+        $user = Auth::user();
         $buyproduct = BuyProduct::get();
         $totalPrice = $buyproduct->sum('price'); // Calculate total price
 
         // Set your Merchant Server Key
         \Midtrans\Config::$serverKey = config('midtrans.server_key');
         // Set to Development/Sandbox Environment (default). Set to true for Production Environment (accept real transaction).
-        \Midtrans\Config::$isProduction = false;
+        \Midtrans\Config::$isProduction = config('midtrans.is_production');
         // Set sanitization on (default)
         \Midtrans\Config::$isSanitized = true;
         // Set 3DS transaction for credit card to true
@@ -123,7 +124,8 @@ class HomeController extends Controller
                 'gross_amount' => $totalPrice,
             ),
             'customer_details' => array(
-                'name' => auth()->user()->username, // Ganti menjadi $request->username
+                'first_name' => $user->username, // Ganti menjadi $request->username
+                'last_name' => '',
                 'email' => auth()->user()->email, // Ganti menjadi $request->email
                 'phone' => $request->input('phone'), // Ganti menjadi $request->phone
             ),
@@ -135,61 +137,41 @@ class HomeController extends Controller
     }
     public function pay(Request $request)
     {
-        $user = Auth::user();
+        // Mendapatkan produk yang dibeli oleh pengguna saat ini
         $buyproduct = BuyProduct::get();
-        $totalPrice = $buyproduct->sum('price'); // Calculate total price
-
-        // Ambil total harga dari variabel yang sudah dihitung sebelumnya
-        $totalPrice = $request->input('totalPrice');
+        // Menghitung total harga dari produk yang dibeli
+        $totalPrice = $buyproduct->sum('price');
 
         // Validasi input
-        $request->validate([
-            'address' => 'required|string',
-            'phone' => 'required|numeric', // Sesuaikan dengan opsi yang ada pada formulir
-        ]);
+        // $request->validate([
+        //     'address' => 'required|string',
+        //     'phone' => 'required|numeric', // Sesuaikan dengan opsi yang ada pada formulir
+        // ]);
 
         $serverKey = config('midtrans.server_key');
         $hashed = hash('sha512', $request->order_id . $request->status_code . $request->gross_amount . $serverKey);
+
         if ($hashed == $request->signature_key) {
-            if ($request->transaction_status == 'capture') {
-                // Buat catatan pembayaran di tabel pay_products
-                PayProduct::create([
-                    'user_id' => $user->id,
-                    'email' => $user->email,
-                    'username' => $user->username,
-                    'total_price' => $totalPrice,
-                    'address' => $request->input('address'),
-                    'phone' => $request->input('phone'),
-                    'status' => 'Paid',
-                    // Tambahkan atribut lain sesuai kebutuhan
-                ]);
+            if ($request->transaction_status == 'capture' or $request->transaction_status == 'settlement') {
+
+                // Pastikan pengguna benar-benar login sebelum mencoba mendapatkan informasi pengguna
+                // if (Auth::check()) {
+                    // $user = Auth::user();
+
+                    // Buat catatan pembayaran di tabel pay_products
+                    PayProduct::create([
+                        'user_id' => 2,
+                        // 'email' => $user->email,
+                        // 'username' => $user->username,
+                        'total_price' => $totalPrice,
+                        // 'address' => $request->input('address'),
+                        // 'phone' => $request->input('phone'),
+                        'status' => 'Paid',
+                        // Tambahkan atribut lain sesuai kebutuhan
+                    ]);
+                // }
             }
         }
-
-        // // Set your Merchant Server Key
-        // \Midtrans\Config::$serverKey = config('midtrans.server_key');
-        // // Set to Development/Sandbox Environment (default). Set to true for Production Environment (accept real transaction).
-        // \Midtrans\Config::$isProduction = false;
-        // // Set sanitization on (default)
-        // \Midtrans\Config::$isSanitized = true;
-        // // Set 3DS transaction for credit card to true
-        // \Midtrans\Config::$is3ds = true;
-
-        // $params = array(
-        //     'transaction_details' => array(
-        //         'order_id' => $pay->id,
-        //         'gross_amount' => $pay->total_price,
-        //     ),
-        //     'customer_details' => array(
-        //         'name' => $request->username, // Ganti menjadi $request->username
-        //         'email' => $request->email, // Ganti menjadi $request->email
-        //         'phone' => $request->phone, // Ganti menjadi $request->phone
-        //     ),
-        // );
-
-        // $snapToken = \Midtrans\Snap::getSnapToken($params);
-
-        // Lakukan tindakan tambahan terkait pembayaran jika diperlukan
 
         // Redirect atau kembalikan respons sesuai kebutuhan
         return redirect()->route('admin.product.product-cart')->with('success_payment', 'Payment Successful, Thank you.');

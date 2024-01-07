@@ -140,12 +140,12 @@
                                         </tbody>
                                         <tfoot>
                                             <tr>
-                                                <th class="text-left pt-lg-4" colspan="2">Total: Rp
+                                                <th class="text-left pt-lg-4" colspan="3">Total: Rp
                                                     {{ $totalPrice }}</th>
                                                 {{-- <form action="{{ route('admin.product.pay') }}" method="POST">
                                                     @csrf
                                                     <input type="hidden" name="totalPrice"
-                                                        value="{{ $totalPrice }}">
+                                                        value="{{ $totalPrice }}"> --}}
 
                                                     <th>
                                                         <!-- Tambahkan input untuk NO HP -->
@@ -171,8 +171,8 @@
                                                         </div>
                                                     </th>
 
-                                                </form> --}}
-                                                <th class="text-right pt-lg-4" colspan="5">
+                                                </form>
+                                                <th class="text-right pt-lg-4" colspan="2">
                                                     <button type="submit" class="btn btn-primary"
                                                         id="pay-button">Pay</button>
                                                 </th>
