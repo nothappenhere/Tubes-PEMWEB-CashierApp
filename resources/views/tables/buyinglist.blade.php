@@ -9,8 +9,8 @@
                     <thead class=" text-primary">
                         <tr>
                             <th class="text-center text-info">#</th>
-                            <th class="text-center text-info">Email</th>
-                            <th class="text-center text-info">Username</th>
+                            {{-- <th class="text-center text-info">Email</th>
+                            <th class="text-center text-info">Username</th> --}}
                             <th class="text-center text-info">Total Price</th>
                             {{-- <th class="text-center text-info">Picture</th> --}}
                             <th class="text-center text-info">Buying Date</th>
@@ -23,15 +23,15 @@
                             @foreach ($payproduct as $item)
                                 <tr>
                                     <td class="text-center">{{ $loop->iteration }}</td>
-                                    <td class="text-center">{{ $item->email }}</td>
-                                    <td class="text-center">{{ $item->username }}</td>
+                                    {{-- <td class="text-center">{{ $item->email }}</td>
+                                    <td class="text-center">{{ $item->username }}</td> --}}
                                     <td class="text-center">Rp {{ $item->total_price }}</td>
                                     {{-- <td class="text-center">
                                         <img src="{{ asset('storage/photo-product/' . $item->photo) }}"
                                         alt="Image-Product" width="150">
                                     </td> --}}
                                     <td class="text-center">{{ $item->created_at }}</td>
-                                    <td class="text-center">-</td>
+                                    <td class="text-center">{{ $item->status }}</td>
                                     <td class="text-right">
                                         <div class="dropdown">
                                             <a class="btn btn-sm btn-icon-only text-light" href="#" role="button"

@@ -22,7 +22,7 @@
             <script>
                 document.write(new Date().getFullYear())
             </script> made with <i class="tim-icons icon-heart-2"></i> by
-            <a href="javascript:void(0)">Cashier App</a> for a better web.
+            <a href="javascript:void(0)">Mhmmd.rzky | Itenas</a> for a better web.
         </div>
     </div>
 </footer>
