@@ -221,12 +221,12 @@
             blackDashboard.showSidebarMessage('Sidebar mini activated...');
           }
 
-          // we simulate the window Resize so the charts will get updated in realtime.
+          // simulate the window Resize so the charts will get updated in realtime.
           var simulateWindowResize = setInterval(function() {
             window.dispatchEvent(new Event('resize'));
           }, 180);
 
-          // we stop the simulation of Window Resize after the animations are completed
+          // stop the simulation of Window Resize after the animations are completed
           setTimeout(function() {
             clearInterval(simulateWindowResize);
           }, 1000);
